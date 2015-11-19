@@ -131,7 +131,7 @@
       this._ctx.fillRect(
           -this._container.width / 2,
           -this._resizeConstraint.side / 2 - this._ctx.lineWidth,
-          this._container.width / 2- this._resizeConstraint.side / 2 - this._ctx.lineWidth,
+          this._container.width / 2 - this._resizeConstraint.side / 2 - this._ctx.lineWidth,
           this._resizeConstraint.side + this._ctx.lineWidth / 2);
       // bottom rectangle
       this._ctx.fillRect(
@@ -153,7 +153,7 @@
       this._ctx.fillText(
           this._image.naturalWidth + ' x ' + this._image.naturalWidth,
           0,
-          - this._resizeConstraint.side / 2 - this._ctx.lineWidth * 2);
+          -this._resizeConstraint.side / 2 - this._ctx.lineWidth * 2);
       this._ctsx.fill();
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
