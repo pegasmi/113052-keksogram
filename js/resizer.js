@@ -142,7 +142,7 @@
       this._ctx.textAlign = 'center';
       this._ctx.fillStyle = '#FFF';
       this._ctx.font = '12px sans-serif';
-      this._ctx.fillText(this._image.naturalWidth + ' x ' + this._image.naturalWidth, this._container.width / 2, this._container.height /2 - this._resizeConstraint.side / 2 - this._ctx.lineWidth * 2);
+      this._ctx.fillText(this._image.naturalWidth + ' x ' + this._image.naturalWidth, this._container.width / 2, this._container.height / 2 - this._resizeConstraint.side / 2 - this._ctx.lineWidth * 2);
       this._ctsx.fill();
     },
 
