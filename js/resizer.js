@@ -154,7 +154,6 @@
           this._image.naturalWidth + ' x ' + this._image.naturalWidth,
           0,
           -this._resizeConstraint.side / 2 - this._ctx.lineWidth * 2);
-      this._ctsx.fill();
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
