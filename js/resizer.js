@@ -119,6 +119,42 @@
           this._resizeConstraint.side - this._ctx.lineWidth / 2,
           this._resizeConstraint.side - this._ctx.lineWidth / 2);
 
+      // layer with transparency consisting of four rectangles
+      this._ctx.fillStyle = 'rgba(0,0,0,0.8)';
+      // top rectangle
+      this._ctx.fillRect(
+          -this._container.width / 2,
+          -this._container.height / 2,
+          this._container.width,
+          (this._container.height - this._resizeConstraint.side) / 2 - this._ctx.lineWidth);
+      // left rectangle
+      this._ctx.fillRect(
+          -this._container.width / 2,
+          -this._resizeConstraint.side / 2 - this._ctx.lineWidth,
+          this._container.width / 2 - this._resizeConstraint.side / 2 - this._ctx.lineWidth,
+          this._resizeConstraint.side + this._ctx.lineWidth / 2);
+      // bottom rectangle
+      this._ctx.fillRect(
+          -this._container.width / 2,
+          (this._resizeConstraint.side - this._ctx.lineWidth) / 2,
+          this._container.width,
+          (this._container.height - this._resizeConstraint.side + this._ctx.lineWidth) / 2);
+      // right rectangle
+      this._ctx.fillRect(
+          (this._resizeConstraint.side - this._ctx.lineWidth) / 2,
+          -this._resizeConstraint.side / 2 - this._ctx.lineWidth,
+          (this._container.width - this._resizeConstraint.side + this._ctx.lineWidth) / 2,
+          this._resizeConstraint.side + this._ctx.lineWidth / 2);
+      // photo measures on the top
+      this._ctx.textBaseline = 'bottom';
+      this._ctx.textAlign = 'center';
+      this._ctx.fillStyle = '#FFF';
+      this._ctx.font = '12px sans-serif';
+      this._ctx.fillText(
+          this._image.naturalWidth + ' x ' + this._image.naturalWidth,
+          0,
+          -this._resizeConstraint.side / 2 - this._ctx.lineWidth * 2);
+
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
       // следующий кадр рисовался с привычной системой координат, где точка
