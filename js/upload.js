@@ -72,7 +72,15 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    return true;
+    var pointX = resizeForm['resize-x'];
+    var pointY = resizeForm['resize-y'];
+    var resizeSize = resizeForm['resize-size'];
+    if (pointX.value + resizeSize.value > currentResizer._image.naturalWidth
+      || pointY.value + resizeSize.value > currentResizer._image.naturalHeight){
+      return false;
+    } else {
+      return true;
+    }
   }
 
   /**
@@ -202,6 +210,34 @@
     }
   };
 
+  //Обработчик изменения формы кадрирования.
+  resizeForm.onchange = function(evt) {
+    var resizeSubmit = document.querySelector('#resize-fwd');
+    if (resizeFormIsValid()) {
+      resizeSubmit.disabled = false;
+      deleteMsgErrorResize();
+      errorMsg.remove;
+    } else {
+      //не работает
+      resizeSubmit.disabled = true;
+      //не работает
+      msgErrorResize();
+    }
+  }
+
+  //При некорректных параметрах кадрирования создается элемент с сообщением об ошибке.
+  function msgErrorResize() {
+    var formControls = document.querySelector('.upload-form-controls');
+    var errorMsg = document.createElement('div');
+    errorMsg.className = 'resize-error';
+    errorMsg.innerHTML = 'Кадр должен находится в пределах исходного изображения';
+    errorMsg.style = 'position: absolute; top: 40px; left: 90px; color: red;';
+    formControls.appendChild(errorMsg);
+  }
+  //не работает
+  function deleteMsgErrorResize() {
+    formControls.removeChild(errorMsg);
+  }
   /**
    * Сброс формы фильтра. Показывает форму кадрирования.
    * @param {Event} evt
