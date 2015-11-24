@@ -75,8 +75,8 @@
     var pointX = resizeForm['resize-x'];
     var pointY = resizeForm['resize-y'];
     var resizeSize = resizeForm['resize-size'];
-    if (pointX.value + resizeSize.value > currentResizer._image.naturalWidth
-      || pointY.value + resizeSize.value > currentResizer._image.naturalHeight) {
+    if (pointX.value + resizeSize.value > currentResizer._image.naturalWidth ||
+      pointY.value + resizeSize.value > currentResizer._image.naturalHeight) {
       return false;
     } else {
       return true;
@@ -211,7 +211,7 @@
   };
 
   //Обработчик изменения формы кадрирования.
-  resizeForm.onchange = function(evt) {
+  resizeForm.onchange = function() {
     var resizeSubmit = document.querySelector('#resize-fwd');
     if (resizeFormIsValid()) {
       resizeSubmit.disabled = false;
@@ -220,12 +220,12 @@
       resizeSubmit.disabled = true;
       msgErrorResize();
     }
-  }
+  };
 
   //При некорректных параметрах кадрирования создается элемент с сообщением об ошибке.
   var formControls = document.querySelector('.upload-form-controls');
   var errorMsg = document.createElement('div');
-  
+
   function msgErrorResize() {
     errorMsg.className = 'resize-error';
     errorMsg.innerHTML = 'Кадр должен находится в пределах исходного изображения';
