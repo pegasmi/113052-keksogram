@@ -256,6 +256,27 @@
     resizeForm.classList.remove('invisible');
   };
 
+  // Определение периода жизни cookies.
+  // @return {number}
+  function cookiePeriodToLive() {
+    var periodForCookies;
+    var sinceBirthday;
+    var now = new Date();
+    var nowYear = now.getFullYear();
+    var lastYear = nowYear - 1;
+    var thisYearBirthday = new Date(nowYear, 2, 21, 2, 40, 0, 0);
+    var lastYearBirthday = new Date(lastYear, 2, 21, 2, 40, 0, 0);
+    var nowNamber = +now;
+    var thisYearBirthdayNumber = +thisYearBirthday;
+    if (nowNamber > thisYearBirthdayNumber){
+      sinceBirthday = nowNamber - thisYearBirthdayNumber;
+    } else {
+      sinceBirthday = nowNamber - lastYearBirthdayNumber;
+    }
+    periodForCookies = nowNamber + sinceBirthday;
+    return new Date(periodForCookies).toUTCString();
+  }
+
   /**
    * Отправка формы фильтра. Возвращает в начальное состояние, предварительно
    * записав сохраненный фильтр в cookie.
@@ -269,6 +290,8 @@
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
+
+    document.cookie = 'filter=' + filterImage.className.split(' ')[1] + ';expires=' + cookiePeriodToLive();
   };
 
   /**
@@ -297,6 +320,12 @@
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
   };
 
+  window.onload = function() {
+    filterImage.className = 'filter-image-preview ' + docCookies.getItem('filter');
+    filterForm['upload-' + docCookies.getItem('filter')].setAttribute('checked', 'checked');
+  }
+
   cleanupResizer();
   updateBackground();
+
 })();
