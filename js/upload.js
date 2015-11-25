@@ -238,11 +238,11 @@
 
   function deleteMsgErrorResize() {
     if (showed) {
-    formControls.removeChild(errorMsg);
-    showed = false;
+      formControls.removeChild(errorMsg);
+      showed = false;
     } else {
       return;
-    };
+    }
   }
 
   /**
