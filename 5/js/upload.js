@@ -321,10 +321,26 @@
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
   };
 
-  window.onload = function() {
-    filterImage.className = 'filter-image-preview ' + docCookies.getItem('filter');
-    filterForm['upload-' + docCookies.getItem('filter')].setAttribute('checked', 'checked');
-  };
+  /**
+   * Функция восстанавливает значение фильтра по прежде сохраненной cookie.
+   */
+  function restorePrevFilterValue() {
+    var filterID = docCookies.getItem('filter');
+    // Проверяем, есть ли cookie, содержащая значение фильтра.
+    if (filterID) {
+      //Применяем фильтр к фотографии.
+      filterImage.className = 'filter-image-preview ' + filterID;
+      //Подсвечиваем кнопку, соответствующую примененному фильтру.
+      filterForm['upload-' + filterID].setAttribute('checked', 'checked');
+    }
+  }
+
+  /**
+   * Выставление значений фильтра по загрузке страницы.
+   */
+  window.addEventListener('load', function() {
+    restorePrevFilterValue();
+  });
 
   cleanupResizer();
   updateBackground();
