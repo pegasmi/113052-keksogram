@@ -268,7 +268,8 @@
     var lastYearBirthday = new Date(lastYear, 2, 21, 2, 40, 0, 0);
     var nowNamber = +now;
     var thisYearBirthdayNumber = +thisYearBirthday;
-    if (nowNamber > thisYearBirthdayNumber){
+    var lastYearBirthdayNumber = +lastYearBirthday;
+    if (nowNamber > thisYearBirthdayNumber) {
       sinceBirthday = nowNamber - thisYearBirthdayNumber;
     } else {
       sinceBirthday = nowNamber - lastYearBirthdayNumber;
@@ -323,7 +324,7 @@
   window.onload = function() {
     filterImage.className = 'filter-image-preview ' + docCookies.getItem('filter');
     filterForm['upload-' + docCookies.getItem('filter')].setAttribute('checked', 'checked');
-  }
+  };
 
   cleanupResizer();
   updateBackground();
