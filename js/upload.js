@@ -225,16 +225,24 @@
   //При некорректных параметрах кадрирования создается элемент с сообщением об ошибке.
   var formControls = document.querySelector('.upload-form-controls');
   var errorMsg = document.createElement('div');
+  var showed = false;
 
   function msgErrorResize() {
     errorMsg.className = 'resize-error';
     errorMsg.innerHTML = 'Кадр должен находится в пределах исходного изображения';
-    errorMsg.style = 'position: absolute; top: 40px; left: 90px; color: red;';
+    //errorMsg.style = 'position: absolute; top: 40px; left: 90px; color: red;';
+    errorMsg.setAttribute('style', 'position: absolute; top: 40px; left: 90px; color: red;');
     formControls.appendChild(errorMsg);
+    showed = true;
   }
 
   function deleteMsgErrorResize() {
+    if (showed) {
     formControls.removeChild(errorMsg);
+    showed = false;
+    } else {
+      return;
+    };
   }
 
   /**
