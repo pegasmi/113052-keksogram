@@ -72,7 +72,15 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    return true;
+    var pointX = resizeForm['resize-x'];
+    var pointY = resizeForm['resize-y'];
+    var resizeSize = resizeForm['resize-size'];
+    if (pointX.value + resizeSize.value > currentResizer._image.naturalWidth ||
+      pointY.value + resizeSize.value > currentResizer._image.naturalHeight) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   /**
@@ -201,6 +209,41 @@
       filterForm.classList.remove('invisible');
     }
   };
+
+  //Обработчик изменения формы кадрирования.
+  resizeForm.onchange = function() {
+    var resizeSubmit = document.querySelector('#resize-fwd');
+    if (resizeFormIsValid()) {
+      resizeSubmit.disabled = false;
+      deleteMsgErrorResize();
+    } else {
+      resizeSubmit.disabled = true;
+      msgErrorResize();
+    }
+  };
+
+  //При некорректных параметрах кадрирования создается элемент с сообщением об ошибке.
+  var formControls = document.querySelector('.upload-form-controls');
+  var errorMsg = document.createElement('div');
+  var showed = false;
+
+  function msgErrorResize() {
+    errorMsg.className = 'resize-error';
+    errorMsg.innerHTML = 'Кадр должен находится в пределах исходного изображения';
+    //errorMsg.style = 'position: absolute; top: 40px; left: 90px; color: red;';
+    errorMsg.setAttribute('style', 'position: absolute; top: 40px; left: 90px; color: red;');
+    formControls.appendChild(errorMsg);
+    showed = true;
+  }
+
+  function deleteMsgErrorResize() {
+    if (showed) {
+      formControls.removeChild(errorMsg);
+      showed = false;
+    } else {
+      return;
+    }
+  }
 
   /**
    * Сброс формы фильтра. Показывает форму кадрирования.
