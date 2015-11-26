@@ -256,6 +256,28 @@
     resizeForm.classList.remove('invisible');
   };
 
+  // Определение периода жизни cookies.
+  // @return {number}
+  function cookiePeriodToLive() {
+    var periodForCookies;
+    var sinceBirthday;
+    var now = new Date();
+    var nowYear = now.getFullYear();
+    var lastYear = nowYear - 1;
+    var thisYearBirthday = new Date(nowYear, 2, 21, 2, 40, 0, 0);
+    var lastYearBirthday = new Date(lastYear, 2, 21, 2, 40, 0, 0);
+    var nowNamber = +now;
+    var thisYearBirthdayNumber = +thisYearBirthday;
+    var lastYearBirthdayNumber = +lastYearBirthday;
+    if (nowNamber > thisYearBirthdayNumber) {
+      sinceBirthday = nowNamber - thisYearBirthdayNumber;
+    } else {
+      sinceBirthday = nowNamber - lastYearBirthdayNumber;
+    }
+    periodForCookies = nowNamber + sinceBirthday;
+    return new Date(periodForCookies).toUTCString();
+  }
+
   /**
    * Отправка формы фильтра. Возвращает в начальное состояние, предварительно
    * записав сохраненный фильтр в cookie.
@@ -269,6 +291,8 @@
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
+
+    document.cookie = 'filter=' + filterImage.className.split(' ')[1] + ';expires=' + cookiePeriodToLive();
   };
 
   /**
@@ -297,6 +321,28 @@
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
   };
 
+  /**
+   * Функция восстанавливает значение фильтра по прежде сохраненной cookie.
+   */
+  function restorePrevFilterValue() {
+    var filterID = docCookies.getItem('filter');
+    // Проверяем, есть ли cookie, содержащая значение фильтра.
+    if (filterID) {
+      //Применяем фильтр к фотографии.
+      filterImage.className = 'filter-image-preview ' + filterID;
+      //Подсвечиваем кнопку, соответствующую примененному фильтру.
+      filterForm['upload-' + filterID].setAttribute('checked', 'checked');
+    }
+  }
+
+  /**
+   * Выставление значений фильтра по загрузке страницы.
+   */
+  window.addEventListener('load', function() {
+    restorePrevFilterValue();
+  });
+
   cleanupResizer();
   updateBackground();
+
 })();
