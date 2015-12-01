@@ -269,6 +269,7 @@
     var nowNamber = +now;
     var thisYearBirthdayNumber = +thisYearBirthday;
     var lastYearBirthdayNumber = +lastYearBirthday;
+
     if (nowNamber > thisYearBirthdayNumber) {
       sinceBirthday = nowNamber - thisYearBirthdayNumber;
     } else {
