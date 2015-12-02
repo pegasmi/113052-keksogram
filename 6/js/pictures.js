@@ -21,7 +21,10 @@
   /**
    * Создание DOM-элемента на основе шаблона.
    * @param {Object} data
-   * @param {Element}
+   * @param {Number} data.likes - количество лайков фотографии
+   * @param {Number} data.comments - количество комментариев фотографии
+   * @param {String} data.url - ссылка на фотографию
+   * @return {Element}
    */
   function getElementFromTemplate(data) {
     var template = document.querySelector('#picture-template');
@@ -37,6 +40,7 @@
     element.querySelector('.picture-comments').textContent = data.comments;
     element.querySelector('.picture-likes').textContent = data.likes;
 
+    var IMAGE_TIMEOUT = 10000;
     var backgroundImage = new Image();
     backgroundImage.src = data.url;
 
@@ -56,9 +60,6 @@
     backgroundImage.onerror = function() {
       element.classList.add('picture-load-failure');
     };
-
-    //backgroundImage.src = data.url;
-    var IMAGE_TIMEOUT = 10000;
 
     return element;
   }
