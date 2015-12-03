@@ -146,7 +146,7 @@
     renderPictures(filteredImages);
   }
 
-  function threeMonths(img) {
+  function FilterThreeMonths(img) {
     var now = new Date();
     var nowNamber = +now;
     //Количество милисекунд в трех месяцах
