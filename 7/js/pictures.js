@@ -40,6 +40,9 @@
       images = loadedPictures;
       // Обработка загружаемых данных.
       renderPictures(loadedPictures);
+      if (!container.classList.contains('pictures-failure')) {
+        container.classList.remove('pictures-failure');
+      }
     };
 
     xhr.onerror = function() {
@@ -143,7 +146,7 @@
     renderPictures(filteredImages);
   }
 
-  function threeMonths(img) {
+  function FilterThreeMonths(img) {
     var now = new Date();
     var nowNamber = +now;
     //Количество милисекунд в трех месяцах
