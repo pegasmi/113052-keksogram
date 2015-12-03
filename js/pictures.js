@@ -129,7 +129,7 @@
     switch (id) {
       case 'filter-new':
         //Отбираем изображения за последние 3 месяца.
-        filteredImages = filteredImages.filter(threeMonths);
+        filteredImages = filteredImages.filter(filterThreeMonths);
         // Сортировка по убыванию даты.
         filteredImages = filteredImages.sort(function(a, b) {
           return b.date - a.date;
