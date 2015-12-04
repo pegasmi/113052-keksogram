@@ -40,7 +40,7 @@
       images = loadedPictures;
       // Обработка загружаемых данных.
       renderPictures(loadedPictures);
-      if (!container.classList.contains('pictures-failure')) {
+      if (container.classList.contains('pictures-failure')) {
         container.classList.remove('pictures-failure');
       }
     };
