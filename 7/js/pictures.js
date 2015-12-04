@@ -40,7 +40,7 @@
       images = loadedPictures;
       // Обработка загружаемых данных.
       renderPictures(loadedPictures);
-      if (!container.classList.contains('pictures-failure')) {
+      if (container.classList.contains('pictures-failure')) {
         container.classList.remove('pictures-failure');
       }
     };
@@ -129,7 +129,7 @@
     switch (id) {
       case 'filter-new':
         //Отбираем изображения за последние 3 месяца.
-        filteredImages = filteredImages.filter(threeMonths);
+        filteredImages = filteredImages.filter(filterThreeMonths);
         // Сортировка по убыванию даты.
         filteredImages = filteredImages.sort(function(a, b) {
           return b.date - a.date;
@@ -146,7 +146,7 @@
     renderPictures(filteredImages);
   }
 
-  function FilterThreeMonths(img) {
+  function filterThreeMonths(img) {
     var now = new Date();
     var nowNamber = +now;
     //Количество милисекунд в трех месяцах
