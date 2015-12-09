@@ -2,65 +2,21 @@
 
 (function() {
 
+  //Прячем блок с фильтрами .filters, добавляя ему класс hidden.
   var filtersBlock = document.querySelector('.filters');
   var images = [];
-  var container = document.querySelector('.pictures');
-  var activeFilter = 'filter-all';
-  var filteredImages = [];
-  var currentPage = 0;
-  // количество фотографий на странице
-  var PAGE_SIZE = 12;
-  var scrollTimeout;
-
-  //Прячем блок с фильтрами .filters, добавляя ему класс hidden.
   if (!filtersBlock.classList.contains('hidden')) {
     filtersBlock.classList.add('hidden');
   }
 
-  filtersBlock.addEventListener('click', function(evt) {
-    var clickedFilter = evt.target;
-    if (clickedFilter.classList.contains('filters-radio')) {
-      setActiveFilter(clickedFilter.id);
-    }
-  });
+  var container = document.querySelector('.pictures');
 
-  function pagesPerScreen() {
-    // Положение контейнера относительно экрана.
-    var containerCoordinates = container.getBoundingClientRect();
-    // Высота вьюпорта.
-    var viewportSize = window.innerHeight;
-    // Проверяем виден ли нижний край контейнера.
-    if (containerCoordinates.bottom <= viewportSize) {
-      if (currentPage < Math.ceil(filteredImages.length / PAGE_SIZE)) {
-        renderPictures(filteredImages, ++currentPage);
-      }
-    }
-  }
-
-  window.addEventListener('scroll', function() {
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(pagesPerScreen, 100);
-  });
-
-  /**
-   * Отрисовка списка фотографий.
-   * @param {Array.<Object>} pictures
-   * @param {number} pageNumber
-   * @param {boolean=} replace
-   */
-  function renderPictures(pictures, pageNumber, replace) {
-    if (replace) {
-      container.innerHTML = '';
-    }
-
+  function renderPictures(pictures) {
+    container.innerHTML = '';
     var fragment = document.createDocumentFragment();
 
-    var from = pageNumber * PAGE_SIZE;
-    var to = from + PAGE_SIZE;
-    var pagePictures = pictures.slice(from, to);
-
-    //Перебор элементов массива pictures, предназначенных для показа на странице, и добавление элемента в fragment.
-    pagePictures.forEach(function(picture) {
+    //Перебор всех элементов массива pictures и добавление элемента в контейнер.
+    pictures.forEach(function(picture) {
       var element = getElementFromTemplate(picture);
       fragment.appendChild(element);
     });
@@ -83,8 +39,7 @@
       var loadedPictures = JSON.parse(rawData);
       images = loadedPictures;
       // Обработка загружаемых данных.
-      setActiveFilter(activeFilter);
-      //renderPictures(loadedPictures);
+      renderPictures(loadedPictures);
       if (container.classList.contains('pictures-failure')) {
         container.classList.remove('pictures-failure');
       }
@@ -152,6 +107,16 @@
     return element;
   }
 
+  var filters = document.querySelectorAll('.filters-radio');
+  for (var i = 0; i < filters.length; i++) {
+    filters[i].onclick = function(evt) {
+      var currentFilter = evt.target.id;
+      setActiveFilter(currentFilter);
+    };
+  }
+
+  var activeFilter = 'filter-all';
+
   function setActiveFilter(id) {
     // Защита от повторного выбора текущего фильтра.
     if (activeFilter === id) {
@@ -159,12 +124,11 @@
     }
 
     // Копируем массив в новую переменную.
-    currentPage = 0;
-    filteredImages = images.slice(0);
+    var filteredImages = images.slice(0);
 
     switch (id) {
       case 'filter-new':
-        // Отбираем изображения за последние 3 месяца.
+        //Отбираем изображения за последние 3 месяца.
         filteredImages = filteredImages.filter(filterThreeMonths);
         // Сортировка по убыванию даты.
         filteredImages = filteredImages.sort(function(a, b) {
@@ -178,8 +142,8 @@
         });
         break;
     }
-    renderPictures(filteredImages, 0, true);
-    pagesPerScreen();
+
+    renderPictures(filteredImages);
   }
 
   function filterThreeMonths(img) {
@@ -189,7 +153,6 @@
     var time = 1000 * 60 * 60 * 24 * 30 * 3;
     var imgDate = new Date(img.date);
     var imgDateNamber = +imgDate;
-
     return imgDateNamber > nowNamber - time;
   }
 
@@ -201,7 +164,6 @@
 
   //Убираем прелоадер.
   container.classList.remove('pictures-loading');
-
   //Добавляем блок с фильтрами .filters, удаляя класс hidden.
   if (filtersBlock.classList.contains('hidden')) {
     filtersBlock.classList.remove('hidden');
