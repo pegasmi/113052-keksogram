@@ -5,7 +5,8 @@
   var filtersBlock = document.querySelector('.filters');
   var pictures = [];
   var container = document.querySelector('.pictures');
-  var activeFilter = 'filter-all';
+  var currentFilter = 'filter-all';
+  var isFirstLoad = true;
   var filteredPictures = [];
   var currentPage = 0;
   // количество фотографий на странице
@@ -27,6 +28,8 @@
   // Лучше назвать renderPagesPerScreen - сразу будет видно, что метод показывает картинки
   // Чем код очевиднее -- тем меньше ошибок
   function renderPagesPerScreen() {
+    console.log('renderPagesPerScreen');
+
     // Положение контейнера относительно экрана.
     var containerCoordinates = container.getBoundingClientRect();
     // Высота вьюпорта.
@@ -51,6 +54,9 @@
    * @param {boolean=} replace
    */
   function renderPictures(pictures, pageNumber, replace) {
+    console.log('renderPictures');
+    console.log('pictures: ', pictures);
+
     if (replace) {
       container.innerHTML = '';
     }
@@ -73,6 +79,8 @@
    * Загрузка списка фотографий
    */
   function getPicturesAndSetFilterAndRender() {
+    console.log('getPicturesAndSetFilterAndRender');
+
     var xhr = new XMLHttpRequest();
     /**
      * @param {string} method
@@ -81,11 +89,12 @@
      */
     xhr.open('GET', 'data/pictures.json');
     xhr.onload = function(evt) {
+      console.log('xhr.onload');
       var rawData = evt.target.response;
       var loadedPictures = JSON.parse(rawData);
       pictures = loadedPictures;
       // Обработка загружаемых данных.
-      setActiveFilterAndRenderPictures(activeFilter);
+      setActiveFilterAndRenderPictures(currentFilter);
       //renderPictures(loadedPictures);
       if (container.classList.contains('pictures-failure')) {
         container.classList.remove('pictures-failure');
@@ -105,6 +114,8 @@
 
   //Показ предупреждения об ошибке
   function picturesFailure() {
+    console.log('picturesFailure');
+
     container.classList.add('pictures-failure');
   }
 
@@ -158,9 +169,15 @@
   // Длинные названия методов говорят о недостаточной декомпозиции -- разделения ответственности
   // Хороший метод делает только одну работу
   function setActiveFilterAndRenderPictures(id) {
+    console.log('setActiveFilterAndRenderPictures');
+
     // Защита от повторного выбора текущего фильтра.
-    if (activeFilter === id) {
-      return;
+    if (currentFilter === id) {
+
+      // При первой загрузке надо показать фото
+      if (!isFirstLoad) {
+        return;
+      }
     }
 
     // Копируем массив в новую переменную.
@@ -185,6 +202,10 @@
     }
     renderPictures(filteredPictures, 0, true);
     renderPagesPerScreen();
+
+    // Сменить значение текущего фильтра
+    currentFilter = id;
+    isFirstLoad = false;
   }
 
   function filterThreeMonths(img) {
