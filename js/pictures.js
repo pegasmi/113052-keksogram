@@ -25,11 +25,7 @@
     }
   });
 
-  // Лучше назвать renderPagesPerScreen - сразу будет видно, что метод показывает картинки
-  // Чем код очевиднее -- тем меньше ошибок
   function renderPagesPerScreen() {
-    console.log('renderPagesPerScreen');
-
     // Положение контейнера относительно экрана.
     var containerCoordinates = container.getBoundingClientRect();
     // Высота вьюпорта.
@@ -53,10 +49,7 @@
    * @param {number} pageNumber
    * @param {boolean=} replace
    */
-  function renderPictures(pictures, pageNumber, replace) {
-    console.log('renderPictures');
-    console.log('pictures: ', pictures);
-
+  function renderPictures(images, pageNumber, replace) {
     if (replace) {
       container.innerHTML = '';
     }
@@ -79,7 +72,6 @@
    * Загрузка списка фотографий
    */
   function getPicturesAndSetFilterAndRender() {
-    console.log('getPicturesAndSetFilterAndRender');
 
     var xhr = new XMLHttpRequest();
     /**
@@ -89,7 +81,6 @@
      */
     xhr.open('GET', 'data/pictures.json');
     xhr.onload = function(evt) {
-      console.log('xhr.onload');
       var rawData = evt.target.response;
       var loadedPictures = JSON.parse(rawData);
       pictures = loadedPictures;
@@ -114,8 +105,6 @@
 
   //Показ предупреждения об ошибке
   function picturesFailure() {
-    console.log('picturesFailure');
-
     container.classList.add('pictures-failure');
   }
 
@@ -169,11 +158,8 @@
   // Длинные названия методов говорят о недостаточной декомпозиции -- разделения ответственности
   // Хороший метод делает только одну работу
   function setActiveFilterAndRenderPictures(id) {
-    console.log('setActiveFilterAndRenderPictures');
-
     // Защита от повторного выбора текущего фильтра.
     if (currentFilter === id) {
-
       // При первой загрузке надо показать фото
       if (!isFirstLoad) {
         return;
