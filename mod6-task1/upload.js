@@ -147,7 +147,7 @@
    * и показывается форма кадрирования.
    * @param {Event} evt
    */
-  uploadForm.addEventListener('change', function(evt) {
+  uploadForm.onchange = function(evt) {
     var element = evt.target;
     if (element.id === 'upload-file') {
       // Проверка типа загружаемого файла, тип должен быть изображением
@@ -157,7 +157,7 @@
 
         showMessage(Action.UPLOADING);
 
-        fileReader.addEventListener('load', function() {
+        fileReader.onload = function() {
           cleanupResizer();
 
           currentResizer = new Resizer(fileReader.result);
@@ -168,7 +168,7 @@
           resizeForm.classList.remove('invisible');
 
           hideMessage();
-        });
+        };
 
         fileReader.readAsDataURL(element.files[0]);
       } else {
@@ -177,14 +177,14 @@
         showMessage(Action.ERROR);
       }
     }
-  });
+  };
 
   /**
    * Обработка сброса формы кадрирования. Возвращает в начальное состояние
    * и обновляет фон.
    * @param {Event} evt
    */
-  resizeForm.addEventListener('reset', function(evt) {
+  resizeForm.onreset = function(evt) {
     evt.preventDefault();
 
     cleanupResizer();
@@ -192,14 +192,14 @@
 
     resizeForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
-  });
+  };
 
   /**
    * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
    * кропнутое изображение в форму добавления фильтра и показывает ее.
    * @param {Event} evt
    */
-  resizeForm.addEventListener('submit', function(evt) {
+  resizeForm.onsubmit = function(evt) {
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
@@ -208,16 +208,10 @@
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
     }
-  });
+  };
 
   //Обработчик изменения формы кадрирования.
-  resizeForm.addEventListener('change', function() {
-    var pointX = resizeForm['resize-x'];
-    var pointY = resizeForm['resize-y'];
-    var resizeSize = resizeForm['resize-size'];
-
-    currentResizer.setConstraint(pointX.value, pointY.value, resizeSize.value);
-
+  resizeForm.onchange = function() {
     var resizeSubmit = document.querySelector('#resize-fwd');
     if (resizeFormIsValid()) {
       resizeSubmit.disabled = false;
@@ -226,7 +220,7 @@
       resizeSubmit.disabled = true;
       msgErrorResize();
     }
-  });
+  };
 
   //При некорректных параметрах кадрирования создается элемент с сообщением об ошибке.
   var formControls = document.querySelector('.upload-form-controls');
@@ -255,12 +249,12 @@
    * Сброс формы фильтра. Показывает форму кадрирования.
    * @param {Event} evt
    */
-  filterForm.addEventListener('reset', function(evt) {
+  filterForm.onreset = function(evt) {
     evt.preventDefault();
 
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
-  });
+  };
 
   // Определение периода жизни cookies.
   // @return {number}
@@ -290,7 +284,7 @@
    * записав сохраненный фильтр в cookie.
    * @param {Event} evt
    */
-  filterForm.addEventListener('submit', function(evt) {
+  filterForm.onsubmit = function(evt) {
     evt.preventDefault();
 
     cleanupResizer();
@@ -300,13 +294,13 @@
     uploadForm.classList.remove('invisible');
 
     document.cookie = 'filter=' + filterImage.className.split(' ')[1] + ';expires=' + cookiePeriodToLive();
-  });
+  };
 
   /**
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
    * выбранному значению в форме.
    */
-  filterForm.addEventListener('change', function() {
+  filterForm.onchange = function() {
     if (!filterMap) {
       // Ленивая инициализация. Объект не создается до тех пор, пока
       // не понадобится прочитать его в первый раз, а после этого запоминается
@@ -326,7 +320,7 @@
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
-  });
+  };
 
   /**
    * Функция восстанавливает значение фильтра по прежде сохраненной cookie.
@@ -348,15 +342,6 @@
   window.addEventListener('load', function() {
     restorePrevFilterValue();
   });
-
-  window.addEventListener('resizerchange', getDisplacement);
-
-  function getDisplacement() {
-    var displacement = currentResizer.getConstraint();
-    resizeForm['resize-x'].value = displacement.x;
-    resizeForm['resize-y'].value = displacement.y;
-    resizeForm['resize-size'].value = displacement.side;
-  }
 
   cleanupResizer();
   updateBackground();
