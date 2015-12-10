@@ -3,13 +3,14 @@
 (function() {
 
   var filtersBlock = document.querySelector('.filters');
-  var images = [];
+  var pictures = [];
   var container = document.querySelector('.pictures');
-  var activeFilter = 'filter-all';
-  var filteredImages = [];
+  var currentFilter = 'filter-all';
+  var isFirstLoad = true;
+  var filteredPictures = [];
   var currentPage = 0;
   // количество фотографий на странице
-  var PAGE_SIZE = 12;
+  var MAX_PICTURES_PER_PAGE = 12;
   var scrollTimeout;
 
   //Прячем блок с фильтрами .filters, добавляя ему класс hidden.
@@ -20,26 +21,30 @@
   filtersBlock.addEventListener('click', function(evt) {
     var clickedFilter = evt.target;
     if (clickedFilter.classList.contains('filters-radio')) {
-      setActiveFilter(clickedFilter.id);
+      setActiveFilterAndRenderPictures(clickedFilter.id);
     }
   });
 
-  function pagesPerScreen() {
+  // Лучше назвать renderPagesPerScreen - сразу будет видно, что метод показывает картинки
+  // Чем код очевиднее -- тем меньше ошибок
+  function renderPagesPerScreen() {
+    console.log('renderPagesPerScreen');
+
     // Положение контейнера относительно экрана.
     var containerCoordinates = container.getBoundingClientRect();
     // Высота вьюпорта.
     var viewportSize = window.innerHeight;
     // Проверяем виден ли нижний край контейнера.
     if (containerCoordinates.bottom <= viewportSize) {
-      if (currentPage < Math.ceil(filteredImages.length / PAGE_SIZE)) {
-        renderPictures(filteredImages, ++currentPage);
+      if (currentPage < Math.ceil(filteredPictures.length / MAX_PICTURES_PER_PAGE)) {
+        renderPictures(filteredPictures, ++currentPage);
       }
     }
   }
 
   window.addEventListener('scroll', function() {
     clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(pagesPerScreen, 100);
+    scrollTimeout = setTimeout(renderPagesPerScreen, 100);
   });
 
   /**
@@ -49,14 +54,17 @@
    * @param {boolean=} replace
    */
   function renderPictures(pictures, pageNumber, replace) {
+    console.log('renderPictures');
+    console.log('pictures: ', pictures);
+
     if (replace) {
       container.innerHTML = '';
     }
 
     var fragment = document.createDocumentFragment();
 
-    var from = pageNumber * PAGE_SIZE;
-    var to = from + PAGE_SIZE;
+    var from = pageNumber * MAX_PICTURES_PER_PAGE;
+    var to = from + MAX_PICTURES_PER_PAGE;
     var pagePictures = pictures.slice(from, to);
 
     //Перебор элементов массива pictures, предназначенных для показа на странице, и добавление элемента в fragment.
@@ -70,7 +78,9 @@
   /**
    * Загрузка списка фотографий
    */
-  function getPictures() {
+  function getPicturesAndSetFilterAndRender() {
+    console.log('getPicturesAndSetFilterAndRender');
+
     var xhr = new XMLHttpRequest();
     /**
      * @param {string} method
@@ -79,11 +89,12 @@
      */
     xhr.open('GET', 'data/pictures.json');
     xhr.onload = function(evt) {
+      console.log('xhr.onload');
       var rawData = evt.target.response;
       var loadedPictures = JSON.parse(rawData);
-      images = loadedPictures;
+      pictures = loadedPictures;
       // Обработка загружаемых данных.
-      setActiveFilter(activeFilter);
+      setActiveFilterAndRenderPictures(currentFilter);
       //renderPictures(loadedPictures);
       if (container.classList.contains('pictures-failure')) {
         container.classList.remove('pictures-failure');
@@ -103,6 +114,8 @@
 
   //Показ предупреждения об ошибке
   function picturesFailure() {
+    console.log('picturesFailure');
+
     container.classList.add('pictures-failure');
   }
 
@@ -152,34 +165,47 @@
     return element;
   }
 
-  function setActiveFilter(id) {
+  // Лучше добавить слово render в название – сразу будет видно, что метод показывает картинки
+  // Длинные названия методов говорят о недостаточной декомпозиции -- разделения ответственности
+  // Хороший метод делает только одну работу
+  function setActiveFilterAndRenderPictures(id) {
+    console.log('setActiveFilterAndRenderPictures');
+
     // Защита от повторного выбора текущего фильтра.
-    if (activeFilter === id) {
-      return;
+    if (currentFilter === id) {
+
+      // При первой загрузке надо показать фото
+      if (!isFirstLoad) {
+        return;
+      }
     }
 
     // Копируем массив в новую переменную.
     currentPage = 0;
-    filteredImages = images.slice(0);
+    filteredPictures = pictures.slice(0);
 
     switch (id) {
       case 'filter-new':
         // Отбираем изображения за последние 3 месяца.
-        filteredImages = filteredImages.filter(filterThreeMonths);
+        filteredPictures = filteredPictures.filter(filterThreeMonths);
         // Сортировка по убыванию даты.
-        filteredImages = filteredImages.sort(function(a, b) {
+        filteredPictures = filteredPictures.sort(function(a, b) {
           return b.date - a.date;
         });
         break;
       case 'filter-discussed':
         // Сортировка по порядку убывания комментариев.
-        filteredImages = filteredImages.sort(function(a, b) {
+        filteredPictures = filteredPictures.sort(function(a, b) {
           return b.comments - a.comments;
         });
         break;
     }
-    renderPictures(filteredImages, 0, true);
-    pagesPerScreen();
+    renderPictures(filteredPictures, 0, true);
+    renderPagesPerScreen();
+
+    // Сменить значение текущего фильтра
+    currentFilter = id;
+    isFirstLoad = false;
   }
 
   function filterThreeMonths(img) {
@@ -197,7 +223,7 @@
   container.classList.add('pictures-loading');
 
   //Начало загрузки изображений
-  getPictures();
+  getPicturesAndSetFilterAndRender();
 
   //Убираем прелоадер.
   container.classList.remove('pictures-loading');
