@@ -168,6 +168,7 @@
           resizeForm.classList.remove('invisible');
 
           hideMessage();
+          setTimeout(getDisplacement, 100);
         });
 
         fileReader.readAsDataURL(element.files[0]);
@@ -349,14 +350,15 @@
     restorePrevFilterValue();
   });
 
-  window.addEventListener('resizerchange', getDisplacement);
-
   function getDisplacement() {
     var displacement = currentResizer.getConstraint();
+    console.log(currentResizer);
     resizeForm['resize-x'].value = displacement.x;
     resizeForm['resize-y'].value = displacement.y;
     resizeForm['resize-size'].value = displacement.side;
   }
+
+  window.addEventListener('resizerchange', getDisplacement);
 
   cleanupResizer();
   updateBackground();
