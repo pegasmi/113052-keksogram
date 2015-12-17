@@ -1,4 +1,6 @@
-(function(){
+'use strict';
+
+(function() {
   /**
    * @param {Object} data
    * @constructor
@@ -9,7 +11,6 @@
 
   Photo.prototype.render = function() {
     var template = document.querySelector('#picture-template');
-    var element;
 
     if ('content' in template) {
       this.element = template.content.children[0].cloneNode(true);
