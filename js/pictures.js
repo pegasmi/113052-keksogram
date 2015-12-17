@@ -132,7 +132,10 @@
     options = options || {};
 
     if (options.replace) {
-      picturesDomElem.innerHTML = '';
+      var renderedPictures = picturesDomElem.querySelectorAll('.picture');
+      Array.prototype.forEach.call(renderedPictures, function(el) {
+        picturesDomElem.removeChild(el);
+      });
     }
 
     var fragment = document.createDocumentFragment();
@@ -218,52 +221,6 @@
 
     }
   }
-
-  /**
-   * Создание DOM-элемента на основе шаблона.
-   * @param {Object} data
-   * @param {Number} data.likes - количество лайков фотографии
-   * @param {Number} data.comments - количество комментариев фотографии
-   * @param {String} data.url - ссылка на фотографию
-   * @return {Element}
-   */
- /* function renderPicture(data) {
-
-    var template = document.querySelector('#picture-template');
-    var element;
-
-    if ('content' in template) {
-      element = template.content.children[0].cloneNode(true);
-      //template не является объектом DocumentFragment, и мы имеем дело с IE
-    } else {
-      element = template.children[0].cloneNode(true);
-    }
-
-    element.querySelector('.picture-comments').textContent = data.comments;
-    element.querySelector('.picture-likes').textContent = data.likes;
-
-    var IMAGE_TIMEOUT = 10000;
-    var backgroundImage = new Image();
-    backgroundImage.src = data.url;
-
-    var imageLoadTimeout = setTimeout(function() {
-      backgroundImage.src = '';
-      element.classList.add('picture-load-failure');
-    }, IMAGE_TIMEOUT);
-
-    backgroundImage.onload = function() {
-      clearTimeout(imageLoadTimeout);
-      backgroundImage.setAttribute('width', '182');
-      backgroundImage.setAttribute('height', '182');
-      element.replaceChild(backgroundImage, element.querySelector('img'));
-    };
-
-    backgroundImage.onerror = function() {
-      element.classList.add('picture-load-failure');
-    };
-
-    return element;
-  }*/
 
   /**
    * Возвращает отфильтрованные по `filterID` фотографии
