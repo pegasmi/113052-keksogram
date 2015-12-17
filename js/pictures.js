@@ -1,3 +1,5 @@
+/* global Photo: true */
+
 'use strict';
 
 (function() {
@@ -5,7 +7,11 @@
   var picturesDomElem = document.querySelector('.pictures');
   var filtersDomElem = document.querySelector('.filters');
 
+  /**
+   * @type {Array}
+   */
   var cachedPictures;
+
   var currentFilter;
   var currentPage;
   var MAX_PICTURES_PER_PAGE = 12;
@@ -14,22 +20,31 @@
 
   init();
 
+
   function init() {
+    console.log('init');
+
     cachedPictures = [];
     currentFilter = 'filter-all';
     currentPage = 0;
 
-    // Показать все фотографии
-    getPictures(function(pictures) {
-      cachedPictures = pictures;
-      renderPictures(pictures);
-    });
 
     // Прячем блок с фильтрами .filters, добавляя ему класс hidden.
     if (!filtersDomElem.classList.contains('hidden')) {
       filtersDomElem.classList.add('hidden');
     }
 
+    // Показать все фотографии
+    getPictures(
+      // callback (begin)
+      function() {
+        // Допущение, что фотографии сохранились в cachedPictures, см код getPictures
+        renderPage(currentPage);
+      }
+      // callback (end)
+    );
+
+    // Отрисовка фотографий по смене фильтра
     filtersDomElem.addEventListener('click', function(evt) {
       var clickedFilter = evt.target;
 
@@ -40,19 +55,22 @@
 
         currentFilter = clickedFilter.id;
 
-        renderPictures(
-          getFilteredPictures(clickedFilter.id),
-          { replace: true }
-        );
+        // TODO: переписать на getPictures() вместо cachedPictures
+        var filteredPictures = filterPictures(cachedPictures, clickedFilter.id);
+
+        renderPictures(filteredPictures, { replace: true });
+
       }
     });
 
+    // Подгрузить фото при скроле
     window.addEventListener('scroll', function() {
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(renderPagesPerScreen, 100);
     });
 
-    // Добавляем блок с фильтрами .filters, удаляя класс hidden.
+
+    // Показываем блок с фильтрами .filters, удаляя класс hidden.
     if (filtersDomElem.classList.contains('hidden')) {
       filtersDomElem.classList.remove('hidden');
     }
@@ -62,15 +80,20 @@
    * Показывает фотографии на текущей странице
    */
   function renderPagesPerScreen() {
+    console.log('renderPagesPerScreen');
+
     // Положение контейнера относительно экрана.
     var containerCoordinates = picturesDomElem.getBoundingClientRect();
 
     var viewportSize = window.innerHeight;
     var isPagesBottomReached = containerCoordinates.bottom > viewportSize;
-    var picturesFiltered = getFilteredPictures(currentFilter);
+
+    // TODO: переписать на getPictures() вместо cachedPictures
+    var picturesFiltered = filterPictures(cachedPictures, currentFilter);
+
     var isExistPicturesToShow = currentPage < Math.ceil(picturesFiltered.length / MAX_PICTURES_PER_PAGE);
 
-    // Проверяем виден ли нижний край контейнера.
+    // Проверяем виден ли нижний край контейнера и есть фотографии для показа
     if (!isPagesBottomReached && isExistPicturesToShow) {
       renderPage(++currentPage);
     }
@@ -82,9 +105,16 @@
    * @param {Number} pageNumber Номер страницы для показа
    */
   function renderPage(pageNumber) {
-    var from = pageNumber * MAX_PICTURES_PER_PAGE;
-    var to = from + MAX_PICTURES_PER_PAGE;
-    var pagePictures = cachedPictures.slice(from, to);
+    console.log('renderPage: ', pageNumber);
+
+
+    var picturesFiltered = filterPictures(cachedPictures, currentFilter);
+
+    var firstPictureIndex = pageNumber * MAX_PICTURES_PER_PAGE;
+    var lastPictureIndex = firstPictureIndex + MAX_PICTURES_PER_PAGE;
+
+    // Фото lastPictureIndex не будет включено
+    var pagePictures = picturesFiltered.slice(firstPictureIndex, lastPictureIndex);
 
     renderPictures(pagePictures);
   }
@@ -97,6 +127,8 @@
    * @param {Boolean} [options.replace=] Флаг замены, если true, будет обновление
    */
   function renderPictures(pictures, options) {
+    console.log('renderPictures');
+
     options = options || {};
 
     if (options.replace) {
@@ -106,7 +138,9 @@
     var fragment = document.createDocumentFragment();
 
     pictures.forEach(function(picture) {
-      fragment.appendChild(renderPicture(picture));
+      var photoElement = new Photo(picture);
+      photoElement.render();
+      fragment.appendChild(photoElement.element);
     });
 
     picturesDomElem.appendChild(fragment);
@@ -120,6 +154,9 @@
    * @callback callback(Array)
    */
   function getPictures(callback) {
+    console.log('getPictures');
+
+
     // Показ прелоадера пока длится загрузка файла.
     informGetPicturesStatus('loading');
 
@@ -129,7 +166,19 @@
 
     xhr.onload = function(evt) {
       informGetPicturesStatus('success');
-      callback(JSON.parse(evt.target.response));
+
+      var pictures = JSON.parse(evt.target.response);
+
+      cachedPictures = pictures;
+
+      /*
+       function(pictures) {
+       var filteredPictures = filterPictures(pictures, currentFilter);
+       renderPictures(filteredPictures);
+       }
+       * */
+
+      callback(pictures);
     };
 
     xhr.onerror = function() {
@@ -150,6 +199,7 @@
    * @param {String} message Сообщение
    */
   function informGetPicturesStatus(message) {
+    console.log('informGetPicturesStatus: ', message);
 
     switch (message) {
       case 'error':
@@ -177,7 +227,8 @@
    * @param {String} data.url - ссылка на фотографию
    * @return {Element}
    */
-  function renderPicture(data) {
+ /* function renderPicture(data) {
+
     var template = document.querySelector('#picture-template');
     var element;
 
@@ -202,7 +253,6 @@
 
     backgroundImage.onload = function() {
       clearTimeout(imageLoadTimeout);
-      //backgroundImage.src = data.url;
       backgroundImage.setAttribute('width', '182');
       backgroundImage.setAttribute('height', '182');
       element.replaceChild(backgroundImage, element.querySelector('img'));
@@ -213,16 +263,19 @@
     };
 
     return element;
-  }
+  }*/
 
   /**
    * Возвращает отфильтрованные по `filterID` фотографии
    *
+   * @param {Array} pictures
    * @param {String} filterID
    * @returns {Array}
    */
-  function getFilteredPictures(filterID) {
-    var filteredPictures = cachedPictures.slice(0);
+  function filterPictures(pictures, filterID) {
+    console.log('filterPictures');
+
+    var filteredPictures = pictures.slice(0);
 
     switch (filterID) {
 
@@ -247,6 +300,9 @@
   }
 
   function filterThreeMonths(img) {
+    // console.log('filterThreeMonths');
+
+
     var now = new Date();
     var nowNamber = +now;
     //Количество милисекунд в трех месяцах
