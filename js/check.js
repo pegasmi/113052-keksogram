@@ -1,4 +1,11 @@
+'use strict';
 
+/**
+ * Генерация сообщения на основе загруженной фотографии.
+ * @param a
+ * @param b
+ * @return {String} Сообщение
+ */
 function getMessage(a, b) {
   if (typeof a == 'boolean') {
     if (a === true){
