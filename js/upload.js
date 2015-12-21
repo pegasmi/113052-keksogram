@@ -263,8 +263,10 @@
     resizeForm.classList.remove('invisible');
   });
 
-  // Определение периода жизни cookies.
-  // @return {number}
+  /**
+   * Определение периода жизни cookies.
+   * @returns {string}
+   */
   function cookiePeriodToLive() {
     var periodForCookies;
     var sinceBirthday;
@@ -350,6 +352,9 @@
     restorePrevFilterValue();
   });
 
+  /**
+   *  Добавление значий смещений и размера размера кадра в поля формы.
+   */
   function getDisplacement() {
     var displacement = currentResizer.getConstraint();
     console.log(currentResizer);
@@ -358,6 +363,11 @@
     resizeForm['resize-size'].value = displacement.side;
   }
 
+  /**
+   * Обработчик берет значения смещения и размера кадра
+   * из объекта resizer для добавления их в форму
+   * @event resizerchange
+   */
   window.addEventListener('resizerchange', getDisplacement);
 
   cleanupResizer();
