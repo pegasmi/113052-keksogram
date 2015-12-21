@@ -2,6 +2,7 @@
 
 (function() {
   /**
+   * Функция-конструктор для галереи.
    * @constructor
    */
   function Gallery() {
@@ -15,6 +16,7 @@
 
   /**
    * Показ галереи.
+   * @method
    */
   Gallery.prototype.show = function() {
     this.element.classList.remove('invisible');
@@ -25,6 +27,7 @@
 
   /**
    * Скрытие галереи.
+   * @method
    */
   Gallery.prototype.hide = function() {
     this.element.classList.add('invisible');
@@ -35,6 +38,7 @@
 
   /**
    * Обработчик клика по крестику.
+   * @method
    * @private
    */
   Gallery.prototype._onCloseClick = function() {
@@ -43,6 +47,7 @@
 
   /**
    * Обработчик клика по фотографии.
+   * @method
    * @private
    */
   Gallery.prototype._onPhotoClick = function() {
@@ -50,7 +55,9 @@
 
   /**
    * Обработчик нажатия на клавишу Esc.
+   * @method
    * @private
+   * @param {KeyboardEvent} e
    */
   Gallery.prototype._onDocumentKeyDown = function(e) {
     if (e.keyCode === 27) {
@@ -58,5 +65,8 @@
     }
   };
 
+  /**
+   * Делаем конструктор доступным в глобальной области видимости.
+   */
   window.Gallery = Gallery;
 })();

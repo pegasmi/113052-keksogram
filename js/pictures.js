@@ -1,10 +1,23 @@
 /* global Photo: true, Gallery: true */
 
+/**
+ * @fileoverview
+ * @author redday059
+ */
+
 'use strict';
 
 (function() {
-
+  /**
+   * Контейнер для картинок.
+   * @type {Element}
+   */
   var picturesDomElem = document.querySelector('.pictures');
+
+  /**
+   * Блок с фильтрами.
+   * @type {Element}
+   */
   var filtersDomElem = document.querySelector('.filters');
 
   /**
@@ -12,17 +25,37 @@
    */
   var cachedPictures;
 
+  /**
+   * @type {string}
+   */
   var currentFilter;
+
+  /**
+   * @type {number}
+   */
   var currentPage;
+
+  /**
+   * @const {number}
+   */
   var MAX_PICTURES_PER_PAGE = 12;
 
+  /**
+   * Таймаут тротлинга в обработчике скролла
+   * @type {number}
+   */
   var scrollTimeout;
 
+  /**
+   * @type {Gallery}
+   */
   var gallery = new Gallery();
 
   init();
 
-
+  /**
+   * Инициализацию модуля списка фотографий.
+   */
   function init() {
     console.log('init');
 
@@ -38,12 +71,10 @@
 
     // Показать все фотографии
     getPictures(
-      // callback (begin)
       function() {
         // Допущение, что фотографии сохранились в cachedPictures, см код getPictures
         renderPage(currentPage);
       }
-      // callback (end)
     );
 
     // Отрисовка фотографий по смене фильтра
@@ -87,12 +118,27 @@
     // Положение контейнера относительно экрана.
     var containerCoordinates = picturesDomElem.getBoundingClientRect();
 
+    /**
+     * Высота вьюпорта.
+     * @type {Number}
+     */
     var viewportSize = window.innerHeight;
+
+    /**
+     * Проверяем, виден ли нижний край контейнера.
+     *
+     * @type {boolean}
+     */
     var isPagesBottomReached = containerCoordinates.bottom > viewportSize;
 
     // TODO: переписать на getPictures() вместо cachedPictures
     var picturesFiltered = filterPictures(cachedPictures, currentFilter);
 
+    /**
+     * Проверяем, есть ли еще неотрендеренные страницы.
+     *
+     * @type {boolean}
+     */
     var isExistPicturesToShow = currentPage < Math.ceil(picturesFiltered.length / MAX_PICTURES_PER_PAGE);
 
     // Проверяем виден ли нижний край контейнера и есть фотографии для показа
@@ -208,7 +254,7 @@
   }
 
   /**
-   *  Показывает статус запроса за фотографиями
+   * Показывает статус запроса за фотографиями
    *
    * @param {String} message Сообщение
    */
@@ -267,10 +313,13 @@
     return filteredPictures;
   }
 
+  /**
+   * Проверяем, что изображение создано не более 3-x месяцев назад.
+   * @param img
+   * @return {boolean}
+   */
   function filterThreeMonths(img) {
     // console.log('filterThreeMonths');
-
-
     var now = new Date();
     var nowNamber = +now;
     //Количество милисекунд в трех месяцах
