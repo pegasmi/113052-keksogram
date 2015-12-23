@@ -106,7 +106,7 @@
   /**
    * TODO: Реализовать
    */
-  Photo.prototype.remove = function () {
+  Photo.prototype.remove = function() {
     // Удалить обработчики на элементе this.element
     this.element.removeEventListener('click', this._onPhotoClick);
 

@@ -58,6 +58,12 @@
    */
   var renderedPictures = [];
 
+  /**
+   * Массив объектов Photo
+   * @type {Array}
+   */
+  var photoОbjects = [];
+
   init();
 
   /**
@@ -83,6 +89,7 @@
         renderPage(currentPage);
       }
     );
+
 
     // Отрисовка фотографий по смене фильтра
     filtersDomElem.addEventListener('click', function(evt) {
@@ -195,18 +202,30 @@
         // Очистка обработчиков событий внутри DomNode
         el.remove();
       }
+      photoОbjects = [];
     }
 
     var fragment = document.createDocumentFragment();
 
     renderedPictures = renderedPictures.concat(pictures.map(function(picture) {
+
       var photoElement = new Photo(picture);
+
+      /**
+       * Номер объекта Photo.
+       * @type {Number}
+       */
+      var photoIndex = photoОbjects.length;
+
+      photoОbjects[photoIndex] = photoElement;
+
       photoElement.render();
       fragment.appendChild(photoElement.element);
+
       //Показ галереи по клику на фото.
       photoElement.onClick = function() {
         gallery.data = photoElement._data;
-        //gallery.setCurrentPicture(index);
+        gallery.setCurrentPicture(photoIndex);
         gallery.show();
       };
 
@@ -215,8 +234,6 @@
 
     picturesDomElem.appendChild(fragment);
   }
-
-
 
   /**
    * Получает фотографии по ajax-запросу
@@ -322,6 +339,7 @@
         break;
     }
 
+    gallery.setPictures(filteredPictures);
     return filteredPictures;
   }
 
