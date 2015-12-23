@@ -8,6 +8,7 @@
    */
   function Photo(data) {
     this._data = data;
+    this._onPhotoClick = this._onPhotoClick.bind(this);
   }
 
   /**
@@ -30,12 +31,14 @@
       this.element = template.children[0].cloneNode(true);
     }
 
+    // Заполнение данными.
     this.element.querySelector('.picture-comments').textContent = this._data.comments;
     this.element.querySelector('.picture-likes').textContent = this._data.likes;
 
     /**
      * Таймаут ожидания загрузки фотографии.
-     * @const {number}
+     * @const
+     * @type {number}
      */
     var IMAGE_TIMEOUT = 10000;
 
@@ -44,6 +47,7 @@
      */
     var backgroundImage = new Image();
 
+    // Задавая src начинаем загрузку.
     backgroundImage.src = this._data.url;
 
     var imageLoadTimeout = setTimeout(function() {
@@ -62,7 +66,40 @@
     backgroundImage.onerror = function() {
       this.element.classList.add('picture-load-failure');
     }.bind(this);
+
+    this.element.addEventListener('click', this._onPhotoClick);
+
+    return this.element;
   };
+
+  /**
+   * @param {Event} evt
+   * @private
+   */
+  Photo.prototype._onPhotoClick = function(evt) {
+    evt.preventDefault();
+    //Клик транслируется вовне только если у элемента есть фотография.
+    if (evt.target.classList.contains('picture') &&
+      !this.element.classList.contains('picture-load-failure')) {
+      //Вызываем коллбэк, который будет переопределен снаружи
+      if (typeof this.onClick === 'function') {
+        this.onClick();
+      }
+    }
+  };
+
+  /**
+   * Удаление обработчика клика по фотографии
+   * @override
+   */
+  Photo.prototype.hide = function() {
+    this.element.removeEventListener('click', this._onPhotoClick);
+  };
+
+  /**
+   * @type {?Function}
+   */
+  Photo.prototype.onClick = null;
 
   /**
    * Делаем констуктор доступным в глобальной области видимости.

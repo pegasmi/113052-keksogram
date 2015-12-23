@@ -41,15 +41,22 @@
   var MAX_PICTURES_PER_PAGE = 12;
 
   /**
-   * Таймаут тротлинга в обработчике скролла
+   * Таймаут тротлинга в обработчике скролла.
    * @type {number}
    */
   var scrollTimeout;
 
   /**
+   * Создание галереи.
    * @type {Gallery}
    */
   var gallery = new Gallery();
+
+  /**
+   * Массив объектов Photo.
+   * @type {Array}
+   */
+  var renderedPictures = [];
 
   init();
 
@@ -181,30 +188,35 @@
 
     if (options.replace) {
       // Удаление обработчиков кликов по картинкам.
-      var renderedPictures = document.querySelectorAll('.picture');
-      Array.prototype.forEach.call(renderedPictures, function(el) {
-        el.removeEventListener('click', _onClick);
-        picturesDomElem.removeChild(el);
-      });
+      var el;
+      while ((el = renderedPictures.shift())) {
+        picturesDomElem.removeChild(el.element);
+        el.onClick = null;
+        // Очистка обработчиков событий внутри DomNode
+        el.remove();
+      }
     }
 
     var fragment = document.createDocumentFragment();
 
-    pictures.forEach(function(picture) {
+    renderedPictures = renderedPictures.concat(pictures.map(function(picture) {
       var photoElement = new Photo(picture);
       photoElement.render();
       fragment.appendChild(photoElement.element);
       //Показ галереи по клику на фото.
-      photoElement.element.addEventListener('click', _onClick);
-    });
+      photoElement.onClick = function() {
+        gallery.data = photoElement._data;
+        //gallery.setCurrentPicture(index);
+        gallery.show();
+      };
+
+      return photoElement;
+    }));
 
     picturesDomElem.appendChild(fragment);
   }
 
-  function _onClick(evt) {
-    evt.preventDefault();
-    gallery.show();
-  }
+
 
   /**
    * Получает фотографии по ajax-запросу
