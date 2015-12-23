@@ -79,8 +79,10 @@
   Photo.prototype._onPhotoClick = function(evt) {
     evt.preventDefault();
     //Клик транслируется вовне только если у элемента есть фотография.
-    if (evt.target.classList.contains('picture') &&
-      !this.element.classList.contains('picture-load-failure')) {
+    if (
+      this.element.classList.contains('picture') &&
+      !this.element.classList.contains('picture-load-failure')
+    ) {
       //Вызываем коллбэк, который будет переопределен снаружи
       if (typeof this.onClick === 'function') {
         this.onClick();
