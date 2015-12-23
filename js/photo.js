@@ -102,6 +102,17 @@
   Photo.prototype.onClick = null;
 
   /**
+   * TODO: Реализовать
+   */
+  Photo.prototype.remove = function () {
+    // Удалить обработчики на элементе this.element
+    this.element.removeEventListener('click', this._onPhotoClick);
+
+    // Удалить элемент this.element из DOM-дерева
+
+  };
+
+  /**
    * Делаем констуктор доступным в глобальной области видимости.
    */
   window.Photo = Photo;
