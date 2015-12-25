@@ -6,10 +6,40 @@
    * @constructor
    */
   function Gallery() {
+    /**
+     * Галерея на странице
+     * @type {Element}
+     */
     this.element = document.querySelector('.gallery-overlay');
+
+    /**
+     * Крест для закрытия галереи
+     * @type {Event}
+     */
     this._closeButton = document.querySelector('.gallery-overlay-close');
-    this._onCloseClick = this._onCloseClick.bind(this);
+
+    /**
+     * Контейнер для фотографии
+     * @type {Element}
+     */
     this._photoImage = this.element.querySelector('.gallery-overlay-image');
+
+    this._likes = document.querySelector('.gallery-overlay-controls-like');
+    this._comments = document.querySelector('.gallery-overlay-controls-comments');
+
+    /**
+     * Список фотографий из json
+     * @type {Array}
+     */
+    this.pictures = [];
+
+    /**
+     * Текущая фотография
+     * @type {Number}
+     */
+    this._currentImage = 0;
+
+    this._onCloseClick = this._onCloseClick.bind(this);
     this._onDocumentKeyDown = this._onDocumentKeyDown.bind(this);
     this._onPhotoClick = this._onPhotoClick.bind(this);
   }
@@ -37,7 +67,7 @@
   };
 
   /**
-   * Обработчик клика по крестику.
+   * Обработчик клика по кресту.
    * @method
    * @private
    */
@@ -51,17 +81,65 @@
    * @private
    */
   Gallery.prototype._onPhotoClick = function() {
+    if (this.pictures[this._currentImage + 1]) {
+      this.setCurrentPicture(++this._currentImage);
+    } else {
+      this._currentImage = 0;
+      this.setCurrentPicture(this._currentImage);
+    }
+  };
+
+  /**
+   * Mетод принимает на вход массив фотографий из json и сохраняет его в объекте.
+   * @param {Array.<Object>} pictures
+   * @method
+   */
+  Gallery.prototype.setPictures = function(pictures) {
+    this.pictures = pictures;
+  };
+
+  /**
+   * Mетод принимает на вход массив фотографий из json и сохраняет его в объекте
+   * @param {number} index
+   * @method
+   */
+  Gallery.prototype.setCurrentPicture = function(index) {
+    var picture = this.pictures[index];
+    console.log(this.pictures[index]);
+    console.log(index);
+    this._photoImage.src = picture.url;
+    this._likes.querySelector('.likes-count').textContent = picture.likes;
+    this._comments.querySelector('.comments-count').textContent = picture.comments;
   };
 
   /**
    * Обработчик нажатия на клавишу Esc.
    * @method
    * @private
-   * @param {KeyboardEvent} e
+   * @param {KeyboardEvent} evt
    */
-  Gallery.prototype._onDocumentKeyDown = function(e) {
-    if (e.keyCode === 27) {
+  Gallery.prototype._onDocumentKeyDown = function(evt) {
+    // Esc
+    if (evt.keyCode === 27) {
       this.hide();
+    }
+    // Стрелка вправо
+    if (evt.keyCode === 39) {
+      if (this._currentImage === this.pictures.length - 1) {
+        this._currentImage = 0;
+        this.setCurrentPicture(this._currentImage);
+      } else {
+        this.setCurrentPicture(++this._currentImage);
+      }
+    }
+    // Стрелка влево
+    if (evt.keyCode === 37) {
+      if (this._currentImage === 0) {
+        this._currentImage = this.pictures.length - 1;
+        this.setCurrentPicture(this._currentImage);
+      } else {
+        this.setCurrentPicture(--this._currentImage);
+      }
     }
   };
 
