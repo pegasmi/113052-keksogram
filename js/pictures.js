@@ -73,7 +73,8 @@
     console.log('init');
 
     cachedPictures = [];
-    currentFilter = localStorage.getItem('filter') || 'filter-all';
+    currentFilter = localStorage.getItem('filter') || 'filter-popular';
+    console.log("!!!!!", filtersDomElem.querySelector('#' + currentFilter))
     filtersDomElem.querySelector('#' + currentFilter).checked = true;
     currentPage = 0;
 
