@@ -218,9 +218,8 @@
        * Номер объекта Photo.
        * @type {Number}
        */
-      var photoIndex = photoОbjects.length;
 
-      photoОbjects[photoIndex] = photoElement;
+      photoОbjects.push(photoElement);
 
       photoElement.render();
       fragment.appendChild(photoElement.element);
@@ -228,8 +227,7 @@
       //Показ галереи по клику на фото.
       photoElement.onClick = function() {
         gallery.data = photoElement._data;
-        gallery.setCurrentPicture(photoIndex);
-        gallery.show();
+        location.hash = '#photo' + '/' + picture.url;
       };
 
       return photoElement;
@@ -271,6 +269,8 @@
        * */
 
       callback(pictures);
+
+      toggleGallery();
     };
 
     xhr.onerror = function() {
@@ -352,7 +352,6 @@
    * @return {boolean}
    */
   function filterThreeMonths(img) {
-    // console.log('filterThreeMonths');
     var now = new Date();
     var nowNamber = +now;
     //Количество милисекунд в трех месяцах
@@ -362,4 +361,19 @@
 
     return imgDateNamber > nowNamber - time;
   }
+
+  function toggleGallery() {
+    var matchedHash = location.hash.match(/#photo\/(\S+)/);
+    if (Array.isArray(matchedHash)) {
+      gallery.setCurrentPicture(matchedHash[1]);
+      gallery.show();
+    } else {
+      gallery.hide();
+    }
+  }
+
+  window.addEventListener('hashchange', function() {
+    toggleGallery();
+  });
+
 })();
