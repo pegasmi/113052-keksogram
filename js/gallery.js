@@ -72,7 +72,7 @@
    * @private
    */
   Gallery.prototype._onCloseClick = function() {
-    this.hide();
+    location.hash = '';
   };
 
   /**
@@ -80,12 +80,13 @@
    * @method
    * @private
    */
+
   Gallery.prototype._onPhotoClick = function() {
     if (this.pictures[this._currentImage + 1]) {
-      this.setCurrentPicture(++this._currentImage);
+      this._setHash(this.pictures[++this._currentImage].url);
     } else {
       this._currentImage = 0;
-      this.setCurrentPicture(this._currentImage);
+      this._setHash(this.pictures[this._currentImage].url);
     }
   };
 
@@ -104,8 +105,17 @@
    * @method
    */
   Gallery.prototype.setCurrentPicture = function(index) {
-    var picture = this.pictures[index];
-    console.log(this.pictures[index]);
+    var picture;
+    if (typeof key === 'number') {
+      picture = this.pictures[index];
+    } else {
+      for (var i = 0; i < this.pictures.length; i++) {
+        if (this.pictures[i].url === index) {
+          picture = this.pictures[i];
+          break;
+        }
+      }
+    }
     console.log(index);
     this._photoImage.src = picture.url;
     this._likes.querySelector('.likes-count').textContent = picture.likes;
@@ -121,26 +131,36 @@
   Gallery.prototype._onDocumentKeyDown = function(evt) {
     // Esc
     if (evt.keyCode === 27) {
-      this.hide();
+      //this.hide();
+      location.hash = '';
     }
     // Стрелка вправо
     if (evt.keyCode === 39) {
       if (this._currentImage === this.pictures.length - 1) {
         this._currentImage = 0;
-        this.setCurrentPicture(this._currentImage);
+        this._setHash(this.pictures[this._currentImage].url);
       } else {
-        this.setCurrentPicture(++this._currentImage);
+        this._setHash(this.pictures[++this._currentImage].url);
       }
     }
     // Стрелка влево
     if (evt.keyCode === 37) {
       if (this._currentImage === 0) {
         this._currentImage = this.pictures.length - 1;
-        this.setCurrentPicture(this._currentImage);
+        this._setHash(this.pictures[this._currentImage].url);
       } else {
-        this.setCurrentPicture(--this._currentImage);
+        this._setHash(this.pictures[--this._currentImage].url);
       }
     }
+  };
+
+  /**
+   * Добавление hash в адресную строку.
+   * @param {string} hash
+   * @private
+   */
+  Gallery.prototype._setHash = function(hash) {
+    location.hash = hash ? 'photo/' + hash : '';
   };
 
   /**
