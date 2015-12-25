@@ -73,7 +73,8 @@
     console.log('init');
 
     cachedPictures = [];
-    currentFilter = 'filter-all';
+    currentFilter = localStorage.getItem('filter') || 'filter-all';
+    filtersDomElem.querySelector('#' + currentFilter).checked = true;
     currentPage = 0;
 
 
@@ -101,6 +102,8 @@
         }
 
         currentFilter = clickedFilter.id;
+
+        localStorage.setItem('filter', clickedFilter.id);
 
         // TODO: переписать на getPictures() вместо cachedPictures
         var filteredPictures = filterPictures(cachedPictures, clickedFilter.id);
