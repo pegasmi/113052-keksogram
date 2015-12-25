@@ -261,13 +261,6 @@
 
       cachedPictures = pictures;
 
-      /*
-       function(pictures) {
-       var filteredPictures = filterPictures(pictures, currentFilter);
-       renderPictures(filteredPictures);
-       }
-       * */
-
       callback(pictures);
 
       toggleGallery();
